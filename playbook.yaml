@@ -1,0 +1,40 @@
+---
+- hosts: vm1
+  
+  tasks:
+  - name: ping pong vm1
+    ping:
+
+  - name: use shell and query id
+    shell: "ls /etc/yum.repos.d"
+  
+  - name: Download file
+    get_url:
+      url: http://192.168.43.82:8090/local.repo
+      dest: /etc/yum.repos.d/local.repo
+      mode: '0644'
+ 
+  - name: Download rpm key epel
+    get_url:
+      url: http://192.168.43.82:8090/RPM-GPG-KEY-EPEL-8
+      dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
+      mode: '0644'
+
+  - name: Install the latest version of apache 
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Start service httpd, if not started
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: Firewall enable
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+      immediate: yes
+
